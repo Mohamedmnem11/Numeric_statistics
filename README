@@ -1,390 +1,246 @@
-# 📄 ملف README.md كامل - نسخ مباشرة للـ GitHub
-
-```markdown
-# 📊 HPC Task 2 - MPI Statistics
+# 🚀 HPC Task 2 - MPI Statistics
 
 ![MPI](https://img.shields.io/badge/MPI-Parallel_Computing-blue)
 ![C](https://img.shields.io/badge/C-99-green)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-## 🎯 Overview
+---
 
-A high-performance parallel program for calculating statistics (Minimum, Maximum, Mean, Sum, and Frequency) from extremely large arrays of integers using **MPI (Message Passing Interface)** for distributed memory processing.
+## 📌 Overview
 
-### Key Features
-- ✅ **Parallel processing** with MPI for load balancing
-- ✅ **Dynamic Hash Table** with automatic rehashing (load factor 0.75)
-- ✅ **Memory efficient** - stores only unique values
-- ✅ **Handles large integers** (up to ±9×10¹⁸ using int64_t)
-- ✅ **Processes 1GB+ files** (145+ million numbers)
-- ✅ **Docker support** for consistent environment
+A **high-performance parallel system** for computing statistical metrics on extremely large integer datasets using **MPI (Message Passing Interface)**.
 
-### Statistics Calculated
-| Statistic | Description |
-|-----------|-------------|
-| **Minimum** | Smallest value in the array |
-| **Maximum** | Largest value in the array |
-| **Sum** | Total sum of all values |
-| **Mean** | Arithmetic average |
-| **Frequency** | Occurrence count of each unique value |
+💡 Designed for **distributed memory systems** with focus on:
+
+* Performance ⚡
+* Scalability 📈
+* Memory efficiency 🧠
+
+---
+
+## ✨ Key Features
+
+* 🔹 Parallel processing باستخدام MPI
+* 🔹 Load balancing ذكي باستخدام `MPI_Scatterv`
+* 🔹 Dynamic Hash Table (rehashing عند 0.75 load factor)
+* 🔹 يدعم أرقام ضخمة (`int64_t`)
+* 🔹 Efficient memory usage (stores unique values only)
+* 🔹 يتعامل مع ملفات أكبر من **1GB**
+* 🔹 Docker support لتشغيل سهل
+
+---
+
+## 📊 Computed Statistics
+
+| Metric       | Description       |
+| ------------ | ----------------- |
+| 🔽 Minimum   | أقل قيمة          |
+| 🔼 Maximum   | أكبر قيمة         |
+| ➕ Sum        | مجموع القيم       |
+| 📈 Mean      | المتوسط الحسابي   |
+| 🔁 Frequency | عدد تكرار كل قيمة |
 
 ---
 
 ## 🏗️ Project Structure
 
-```
+```bash
 hpc-task2-statistics/
 │
-├── src/                      # Source files
-│   ├── main.c               # Main entry point
-│   ├── mpi_distributor.c    # Data distribution & result gathering
-│   ├── stats_calculator.c   # Min, max, sum calculations
-│   ├── frequency_tracker.c  # Hash table implementation
-│   └── data_loader.c        # File I/O operations
+├── src/
+│   ├── main.c
+│   ├── mpi_distributor.c
+│   ├── stats_calculator.c
+│   ├── frequency_tracker.c
+│   └── data_loader.c
 │
-├── include/                  # Header files
-│   ├── common.h             # Common definitions & structs
-│   ├── mpi_distributor.h
-│   ├── stats_calculator.h
-│   ├── frequency_tracker.h
-│   └── data_loader.h
+├── include/
 │
-├── data/                     # Input data directory
-│   └── input.txt            # Sample input file
+├── data/
+├── output/
+├── bin/
 │
-├── output/                   # Results directory
-│   └── result.txt           # Statistics output
-│
-├── bin/                      # Compiled binaries
-│   └── stats                # Executable program
-│
-├── Makefile                  # Build automation
-├── Dockerfile                # Docker configuration
-├── docker-compose.yml       # Docker compose setup
-├── generate_text.py         # Test data generator
-└── README.md                # This file
+├── Makefile
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
 ```
 
 ---
 
-## 🚀 Installation & Setup
+## ⚙️ Installation
 
-### Prerequisites
+### 🐧 Linux / WSL
 
-#### Option 1: Native Linux/WSL
 ```bash
-# Install MPI and build tools
-sudo apt-get update
-sudo apt-get install -y mpich gcc make
+sudo apt update
+sudo apt install -y mpich gcc make
 ```
 
-#### Option 2: Docker (Recommended for consistency)
+### 🐳 Docker (Recommended)
+
 ```bash
-# Docker Desktop must be installed
-# Then build the image
-docker build -t mpi-stats2 .
+docker build -t mpi-stats .
 ```
 
 ---
 
-## 🔨 Building the Project
+## 🔨 Build
 
 ```bash
-# Clean previous builds
 make clean
-
-# Compile the program
 make
-
-# Verify the executable
-ls -la bin/stats
 ```
 
 ---
 
-## 📝 Generating Test Data
+## ▶️ Run
 
-### Small dataset (10,000 numbers)
-```bash
-for i in {1..10000}; do echo $((RANDOM % 1000)); done > data/input.txt
-```
+### باستخدام MPI
 
-### Medium dataset (100 MB / ~14.6 million numbers)
-```bash
-python3 generate_text.py
-```
-
-### Large dataset (1 GB / ~145 million numbers)
-```bash
-# Edit generate_text.py and change TARGET_SIZE_GB to 1
-sed -i 's/TARGET_SIZE_GB = 0.1/TARGET_SIZE_GB = 1/' generate_text.py
-python3 generate_text.py
-```
-
----
-
-## 🏃 Running the Program
-
-### Run with 4 MPI processes
 ```bash
 mpirun -np 4 ./bin/stats data/input.txt
 ```
 
-### Run with different number of processes
+### باستخدام Docker
+
 ```bash
-# 2 processes
-mpirun -np 2 ./bin/stats data/input.txt
-
-# 8 processes (if available)
-mpirun -np 8 ./bin/stats data/input.txt
-
-# Using oversubscribe (for testing with more processes than cores)
-mpirun -np 8 --oversubscribe ./bin/stats data/input.txt
+docker run --rm -v $(pwd):/app mpi-stats mpirun -np 4 /app/bin/stats /app/data/input.txt
 ```
 
-### Run with Docker
+---
+
+## 🧪 Generate Test Data
+
+### Small
+
 ```bash
-docker run --rm -v $(pwd):/app mpi-stats2 mpirun -np 4 /app/bin/stats /app/data/input.txt
+for i in {1..10000}; do echo $((RANDOM % 1000)); done > data/input.txt
 ```
 
-### Run with Docker Compose
+### Large
+
 ```bash
-docker-compose up
+python3 generate_text.py
 ```
 
 ---
 
 ## 📊 Sample Output
 
-```
-========================================
-     MPI Statistics Program
-========================================
-File: data/input.txt
-File size: 1024.58 MB
-MPI processes: 4
-Mode: NORMAL (all data in memory)
-========================================
+```text
 Total elements: 145,400,000
-Data size in memory: 1109.31 MB
-Data distributed: 4 processes
+Minimum: -1000000
+Maximum: 1000000
+Mean: 8.49
 
-✅ Results saved to output/result.txt
-
-========================================
-     FINAL STATISTICS
-========================================
-
-📁 FILE INFORMATION:
-   - File name: data/input.txt
-   - Total elements: 145,400,000
-
-🖥️  MPI INFORMATION:
-   - Number of processes: 4
-
-⏱️  PERFORMANCE:
-   - I/O + Distribution: 2.5 seconds
-   - Total execution: 222 seconds
-
-📊 STATISTICS:
-   - Minimum value: -1000000
-   - Maximum value: 1000000
-   - Sum: 1,234,567
-   - Mean: 8.49
-   - Total count: 145,400,000
-
-=== Frequency Table (Dynamic Hash Table) ===
+=== Frequency Table ===
 Unique values: 2,000,001
-Capacity: 4,194,304
-Load factor: 47.68%
-
-Top values (most frequent):
-Value : Count
-----------------
-5 : 147
--3 : 142
-100 : 138
-...
 ```
 
 ---
 
-## 📈 Performance Results
+## 📈 Performance
 
-| Dataset Size | Numbers | Time (4 cores) | Processing Speed |
-|--------------|---------|----------------|------------------|
-| 100 KB | 10,000 | 0.01 sec | 1,000,000 nums/sec |
-| 100 MB | 14.6M | 27 sec | 540,000 nums/sec |
-| **1 GB** | **145.4M** | **222 sec** | **654,000 nums/sec** |
+| Dataset | Time  | Speed         |
+| ------- | ----- | ------------- |
+| 100KB   | 0.01s | 1M nums/sec   |
+| 100MB   | 27s   | 540K nums/sec |
+| 1GB     | 222s  | 654K nums/sec |
 
-### Performance Analysis
-- **Linear scaling** with dataset size
-- **Efficient load balancing** using MPI_Scatterv
-- **Hash table performance** maintained via automatic rehashing (load factor 0.75)
-- **4 processes** optimal for typical systems (matches physical cores)
+✔ Scaling شبه Linear
+✔ أفضل أداء عند 4 processes
 
 ---
 
-## 🛠️ Technical Implementation
+## ⚡ How It Works
 
-### 1. Dynamic Hash Table (Frequency Tracker)
+### 1️⃣ Data Distribution
 
 ```c
-// Hash function with good distribution
-unsigned int hash_function(large_int value, int capacity);
-
-// Automatic rehashing when load factor > 0.75
-if ((double)table->size / table->capacity > LOAD_FACTOR) {
-    rehash(table);  // Doubles capacity
-}
+MPI_Scatterv(...)
 ```
 
-**Key Features:**
-- **O(1)** average lookup and insertion
-- **Sparse representation** - stores only unique values
-- **Automatic resizing** to maintain performance
-- **Chaining** for collision resolution
+### 2️⃣ Local Computation
 
-### 2. MPI Load Balancing
+* Min / Max / Sum
+* Frequency باستخدام Hash Table
 
-```c
-// Distribute data unevenly when necessary
-*local_size = total_size / size;
-if (rank < total_size % size) {
-    (*local_size)++;  // First k processes get one extra element
-}
-
-// Use MPI_Scatterv for non-uniform distribution
-MPI_Scatterv(global_data, send_counts, displacements, MPI_INT64_T,
-             *local_data, *local_size, MPI_INT64_T,
-             0, MPI_COMM_WORLD);
-```
-
-### 3. Result Gathering
+### 3️⃣ Result Aggregation
 
 ```c
-// Reduce basic statistics
-MPI_Reduce(&local_stats.min, &global_stats->min, 1, MPI_INT64_T, MPI_MIN, 0, ...);
-MPI_Reduce(&local_stats.max, &global_stats->max, 1, MPI_INT64_T, MPI_MAX, 0, ...);
-MPI_Reduce(&local_stats.sum, &global_stats->sum, 1, MPI_INT64_T, MPI_SUM, 0, ...);
-
-// Manual merge for frequency tables
-serialized_entry_t *entries = serialize_table(local_freq);
-MPI_Send(entries, ...);
-// Root process merges all tables using insert_with_count()
+MPI_Reduce(...)
 ```
 
 ---
 
-## 🔧 Makefile Commands
+## 🧠 Core Idea
 
-| Command | Description |
-|---------|-------------|
-| `make` | Build the project |
-| `make clean` | Remove compiled files and results |
-| `make run` | Build and run with 4 processes |
+بدل ما نخزن كل البيانات:
+✔ بنخزن **القيم unique فقط**
+✔ مع عدد التكرار
+
+➡️ ده بيقلل الذاكرة بشكل ضخم جدًا
 
 ---
 
 ## 🐳 Docker Support
 
-### Dockerfile Features
-- Based on **Ubuntu 22.04**
-- Installs **MPICH**, **GCC**, **Make**
-- Copies and builds the project
-- Configurable memory limit (1GB default)
-
-### Docker Commands
 ```bash
-# Build image
-docker build -t mpi-stats2 .
-
-# Run container
-docker run --rm -v $(pwd):/app mpi-stats2 mpirun -np 4 /app/bin/stats /app/data/input.txt
-
-# Using docker-compose
+docker build -t mpi-stats .
 docker-compose up
 ```
 
 ---
 
-## 📋 Requirements
+## 🛠️ Requirements
 
-- **MPI Implementation**: MPICH or OpenMPI
-- **Compiler**: GCC with MPI support (mpicc)
-- **OS**: Linux, WSL2, or Docker environment
-- **Memory**: At least 2GB RAM for 1GB datasets
-- **Storage**: ~10GB for large dataset generation
-
----
-
-## 🧪 Testing
-
-### Quick Test (1000 numbers)
-```bash
-echo "1 2 3 4 5 6 7 8 9 10" > data/input.txt
-for i in {1..90}; do echo $((RANDOM % 20)); done >> data/input.txt
-mpirun -np 4 ./bin/stats data/input.txt
-cat output/result.txt
-```
-
-### Expected output for test:
-```
-Minimum: 1
-Maximum: 19
-Mean: ~8-10
-Frequency table with unique values
-```
+* MPI (MPICH / OpenMPI)
+* GCC
+* Linux / WSL / Docker
+* ≥ 2GB RAM
 
 ---
 
 ## 🐛 Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| `mpicc: command not found` | Install MPI: `sudo apt-get install mpich` |
-| `Not enough slots available` | Use `--oversubscribe` flag or reduce processes |
-| `Cannot open file` | Check file path and existence |
-| `Memory allocation failed` | Reduce dataset size or increase system memory |
-| `Docker connection error` | Restart Docker Desktop |
+| Problem         | Solution              |
+| --------------- | --------------------- |
+| mpicc not found | install mpich         |
+| slots error     | use `--oversubscribe` |
+| memory issue    | reduce dataset        |
 
 ---
 
-## 📝 Future Improvements
+## 🚀 Future Work
 
-- [ ] Binary file I/O for faster processing
-- [ ] Streaming mode for files > 10GB
-- [ ] GPU acceleration with CUDA
-- [ ] Real-time progress monitoring
-- [ ] Support for floating-point numbers
-- [ ] CSV/JSON output formats
+* Streaming for huge files
+* GPU acceleration (CUDA)
+* Binary file processing
+* Real-time progress bar
 
 ---
 
-## 👥 Authors
+## 👨‍💻 Author
 
-- **Project**: HPC Task 2 - MPI Statistics
-- **Date**: 2026
-- **Course**: High Performance Computing
-- **Environment**: Ubuntu 22.04 + MPICH + OpenMPI
+**Mohamed Abdelmonem**
+HPC Course - 2026
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License
 
 ---
 
-## 🙏 Acknowledgments
+## ⭐ Final Note
 
-- Professor and teaching assistants for guidance
-- Open MPI team for the MPI implementation
-- Docker team for containerization support
+This project demonstrates:
 
----
+* Parallel Computing باستخدام MPI
+* Efficient Data Structures
+* Real-world large-scale processing
 
-## 📧 Contact
-
-For questions or suggestions, please open an issue on GitHub.
+🔥 مناسب جدًا كمشروع HPC قوي
